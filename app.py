@@ -29,6 +29,22 @@ def predict():
         return render_template('result.html', prediction=prediction)
     except Exception as e:
         return f"Error: {e}"
+@app.route('/dashboard')
+def dashboard():
+    # Sample fraud data
+    fraud_logs = [
+        {"date": "2025-08-01", "location": "Lagos", "amount": 30500, "status": "Fraud"},
+        {"date": "2025-08-02", "location": "Abuja", "amount": 15000, "status": "Normal"},
+        {"date": "2025-08-03", "location": "Kano", "amount": 72000, "status": "Fraud"},
+        {"date": "2025-08-03", "location": "Port Harcourt", "amount": 8200, "status": "Normal"},
+    ]
+
+    # Chart data
+    chart_labels = ["Lagos", "Abuja", "Kano", "Port Harcourt"]
+    chart_data = [5, 1, 3, 2]  # Number of frauds per location (mocked)
+
+    return render_template('dashboard.html', fraud_logs=fraud_logs, chart_labels=chart_labels, chart_data=chart_data)
 
 if __name__ == '__main__':
     app.run(debug=True)
+
