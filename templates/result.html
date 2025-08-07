@@ -1,45 +1,88 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title></title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
-  </head>
-  <body>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Credit Card Fraud Detection - Results</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}" />
+    <style>
+        body {
+            font-family: 'Quicksand', sans-serif;
+            text-align: center;
+            background-color: #f9fafc;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #e3f2fd;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            margin: 0;
+            color: #000;
+        }
+        h2 {
+            margin-top: 30px;
+        }
+        .results {
+            margin: 40px auto;
+            max-width: 800px;
+            padding: 20px;
+            border-radius: 10px;
+            background: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .results h1 {
+            font-size: 1.5rem;
+        }
+        .results h2 {
+            font-size: 1.3rem;
+        }
+        .btn-info {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 25px;
+            background-color: #2196f3;
+            border: none;
+            color: white;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.3s ease;
+        }
+        .btn-info:hover {
+            background-color: #1976d2;
+        }
+    </style>
+</head>
+<body>
     <header>
-      <div class="container">
-        <div id="brandname">
-          <h1 style="color: black">
-          Credit Card Fraud Detection Results
-          </h1>
+        <div class="container">
+            <div id="brandname">
+                <h1>Credit Card Fraud Detection Results</h1>
+            </div>
         </div>
-        <!-- <h2><p style="text-align: center">Detection</p></h2> -->
-      </div>
     </header>
-    <h2 style="color: blueviolet;">
-      <b>Validation Completed.</b>
-    </h2>
-    <div class="results">
-      {% if prediction == 0 %}
-      <h1 style="color: green">
-          According to our model, the provided transaction is NOT a Fraud transaction.
-      </h1>
-      {% elif prediction == 1 %}
-      <h2 style="color: red">
-          According to our model, this transaction is a Fraud transaction.
-      </h2>
-      {% endif %}
-    </div>
-    <a href="/">
-      <button class="btn-info">Retest</button>
 
+    <h2 style="color: blueviolet;"><b>Validation Completed.</b></h2>
+
+    <div class="results">
+        {% if prediction == 0 %}
+        <h1 style="color: green;">
+            ✅ According to our model, the provided transaction is NOT a Fraud transaction.
+        </h1>
+        {% elif prediction == 1 %}
+        <h2 style="color: red;">
+            ⚠️ According to our model, this transaction is a Fraud transaction.
+        </h2>
+        {% endif %}
+    </div>
+
+    <a href="/">
+        <button class="btn-info">🔄 Retest</button>
     </a>
-  </body>
+</body>
 </html>
