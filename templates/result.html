@@ -1,44 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <title>Result - Naija Credit Card Fraud Checker</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
-  </head>
-  <body>
-    <header>
-      <div class="container">
-        <h1 style="color: green;">Transaction Result</h1>
-      </div>
-    </header>
+<head>
+  <meta charset="UTF-8" />
+  <title>Fraud Check Results - Nigeria</title>
+  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}" />
+  <style>
+    body {
+      font-family: 'Quicksand', sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      padding: 20px;
+    }
+    .results {
+      margin-top: 40px;
+      text-align: center;
+    }
+    .safe {
+      color: green;
+      font-size: 22px;
+      border: 2px solid green;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #e9f7ef;
+    }
+    .fraud {
+      color: red;
+      font-size: 22px;
+      border: 2px solid red;
+      padding: 20px;
+      border-radius: 10px;
+      background-color: #fcebea;
+    }
+    .dashboard-link {
+      margin-top: 30px;
+      text-align: center;
+    }
+    .dashboard-link a {
+      text-decoration: none;
+      background-color: #007bff;
+      color: #fff;
+      padding: 10px 25px;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+  <h1 style="text-align: center; color: #4a148c;">Fraud Detection Result - Nigerian System</h1>
 
-    <main class="form-container">
-      <div class="result-box">
-        <h2>{{ prediction_text }}</h2>
-        {% if prediction_text == 'This transaction is likely fraudulent.' %}
-          <p style="color: red; font-size: 16px;">
-            Please contact your bank immediately or block your card.
-          </p>
-        {% else %}
-          <p style="color: green; font-size: 16px;">
-            No fraud detected. The transaction seems safe.
-          </p>
-        {% endif %}
-        <br />
-        <a href="/" class="btn-info">Check Another Transaction</a>
+  <div class="results">
+    {% if prediction == 0 %}
+      <div class="safe">
+        ✅ Good news! Your transaction looks safe and normal. No fraud detected.
       </div>
-    </main>
+    {% elif prediction == 1 %}
+      <div class="fraud">
+        ⚠️ Alert! This transaction shows signs of fraud. Please contact your bank immediately.
+      </div>
+    {% endif %}
+  </div>
 
-    <footer style="text-align: center; padding-top: 30px;">
-      <p style="font-size: 13px; color: #555;">© 2025 Naija Fraud Detector. All rights reserved.</p>
-    </footer>
-  </body>
+  <div class="dashboard-link">
+    <a href="/dashboard">Go to Dashboard</a> |
+    <a href="/">Test Another Transaction</a>
+  </div>
+</body>
 </html>
