@@ -1,29 +1,34 @@
-from flask import Flask, render_template, url_for, request
-import pandas as pd, numpy as np
-import pickle
+# app.py
 
-# load the model from disk
-filename = 'model.pkl'
-clf = pickle.load(open(filename, 'rb'))
+from flask import Flask, render_template, request
+import pickle
+import numpy as np
 
 app = Flask(__name__)
 
+# Load model
+model = pickle.load(open('fraud_model.pkl', 'rb'))
+
 @app.route('/')
 def home():
-	return render_template('home.html')
+    return render_template('home.html')
 
-@app.route('/predict', methods = ['POST'])
+@app.route('/predict', methods=['POST'])
 def predict():
-	if request.method == 'POST':
-		me = request.form['message']
-		message = [float(x) for x in me.split()]
-		vect = np.array(message).reshape(1, -1)
-		my_prediction = clf.predict(vect)
-	return render_template('result.html',prediction = my_prediction)
-
+    try:
+        inputs = [
+            float(request.form['amount']),
+            int(request.form['transaction_hour']),
+            int(request.form['device_type']),
+            int(request.form['channel']),
+            int(request.form['merchant_type']),
+            int(request.form['customer_age']),
+            int(request.form['location_code']),
+        ]
+        prediction = model.predict([inputs])[0]
+        return render_template('result.html', prediction=prediction)
+    except Exception as e:
+        return f"Error: {e}"
 
 if __name__ == '__main__':
-	app.run(debug=True)
-
-	
-
+    app.run(debug=True)
