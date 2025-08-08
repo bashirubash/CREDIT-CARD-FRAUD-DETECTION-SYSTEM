@@ -2,16 +2,26 @@ from flask import Flask, request, render_template_string
 import pickle
 import numpy as np
 
-# Load model and label encoders
-with open('fraud_model.pkl', 'rb') as f:
+# Load the trained model
+with open('model.pkl', 'rb') as f:
     model = pickle.load(f)
 
-with open('label_encoders.pkl', 'rb') as f:
-    label_encoders = pickle.load(f)
+# Load individual encoders
+with open('channel_encoder.pkl', 'rb') as f:
+    channel_encoder = pickle.load(f)
+
+with open('location_encoder.pkl', 'rb') as f:
+    location_encoder = pickle.load(f)
+
+with open('merchant_encoder.pkl', 'rb') as f:
+    merchant_encoder = pickle.load(f)
+
+with open('time_encoder.pkl', 'rb') as f:
+    time_encoder = pickle.load(f)
 
 app = Flask(__name__)
 
-# HTML + CSS + Bootstrap form (inline)
+# HTML + CSS + Bootstrap form
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -87,28 +97,29 @@ def predict():
     result = None
     if request.method == 'POST':
         try:
-            # Get form data
+            # Get form input
             amount = float(request.form['amount'])
             location = request.form['location']
             channel = request.form['channel']
             time = request.form['time']
             merchant = request.form['merchant']
 
-            # Prepare input for model
-            input_data = [amount]
-            for feature, value in zip(['location', 'channel', 'time', 'merchant'],
-                                      [location, channel, time, merchant]):
-                encoder = label_encoders[feature]
-                encoded_value = encoder.transform([value])[0]
-                input_data.append(encoded_value)
+            # Encode categorical values
+            encoded_location = location_encoder.transform([location])[0]
+            encoded_channel = channel_encoder.transform([channel])[0]
+            encoded_time = time_encoder.transform([time])[0]
+            encoded_merchant = merchant_encoder.transform([merchant])[0]
+
+            # Create input for model
+            input_data = np.array([[amount, encoded_location, encoded_channel, encoded_time, encoded_merchant]])
 
             # Predict
-            prediction = model.predict([input_data])[0]
+            prediction = model.predict(input_data)[0]
             result = int(prediction)
 
         except Exception as e:
-            result = None
             print(f"❌ Error: {e}")
+            result = None
 
     return render_template_string(HTML_TEMPLATE, result=result)
 
