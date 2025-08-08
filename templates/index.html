@@ -1,0 +1,29 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 class="mb-4">Predict Fraudulent Transactions</h2>
+<form method="POST" action="/" class="row g-3">
+    <div class="col-md-6">
+        <label for="amount" class="form-label">Transaction Amount</label>
+        <input type="number" class="form-control" id="amount" name="amount" required>
+    </div>
+    <div class="col-md-6">
+        <label for="location" class="form-label">Location</label>
+        <input type="text" class="form-control" id="location" name="location" required>
+    </div>
+    <div class="col-md-6">
+        <label for="channel" class="form-label">Channel</label>
+        <input type="text" class="form-control" id="channel" name="channel" required>
+    </div>
+    <div class="col-md-6">
+        <label for="time" class="form-label">Time of Day</label>
+        <input type="text" class="form-control" id="time" name="time" required>
+    </div>
+    <div class="col-md-6">
+        <label for="merchant" class="form-label">Merchant</label>
+        <input type="text" class="form-control" id="merchant" name="merchant" required>
+    </div>
+    <div class="col-12">
+        <button type="submit" class="btn btn-primary">Predict</button>
+    </div>
+</form>
+{% endblock %}
