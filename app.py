@@ -1,44 +1,39 @@
 from flask import Flask, request, render_template_string
 import joblib
-import numpy as np
 import pandas as pd
 
 app = Flask(__name__)
 
-# Load model pipeline
+# Load the model pipeline (should include preprocessing)
 model = joblib.load('model.pkl')
 
-# Define available options for dropdowns
+# Dropdown options
 bank_options = ['Access', 'GTBank', 'UBA', 'FirstBank', 'Zenith']
 card_types = ['Visa', 'MasterCard', 'Verve']
 transaction_types = ['POS', 'Online', 'ATM']
 locations = ['Abuja', 'Lagos', 'Kano', 'Port Harcourt']
 
-# Home route with form
 @app.route('/', methods=['GET', 'POST'])
 def index():
     prediction = None
     if request.method == 'POST':
-        # Get user inputs
-        amount = float(request.form['amount'])
-        bank = request.form['bank']
-        card = request.form['card']
-        ttype = request.form['transaction']
-        location = request.form['location']
+        try:
+            # Collect inputs
+            data = pd.DataFrame([{
+                'Transaction_Amount': float(request.form['amount']),
+                'Bank_Name': request.form['bank'],
+                'Card_Type': request.form['card'],
+                'Transaction_Type': request.form['transaction'],
+                'Location': request.form['location']
+            }])
 
-        # Create DataFrame for model input
-        data = pd.DataFrame([{
-            'Transaction_Amount': amount,
-            'Bank_Name': bank,
-            'Card_Type': card,
-            'Transaction_Type': ttype,
-            'Location': location
-        }])
+            # Predict
+            result = model.predict(data)[0]
+            prediction = "🔴 Fraudulent Transaction" if result == 1 else "🟢 Legitimate Transaction"
+        except Exception as e:
+            prediction = f"Error: {str(e)}"
 
-        # Predict
-        result = model.predict(data)[0]
-        prediction = "🔴 Fraudulent Transaction" if result == 1 else "🟢 Legitimate Transaction"
-
+    # Render form
     return render_template_string('''
     <!DOCTYPE html>
     <html>
