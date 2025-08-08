@@ -1,50 +1,38 @@
-# app.py
-
 from flask import Flask, render_template, request
 import pickle
 import numpy as np
 
 app = Flask(__name__)
 
-# Load model
-model = pickle.load(open('fraud_model.pkl', 'rb'))
+# Load your trained model
+model = pickle.load(open('model.pkl', 'rb'))
+
+# Define label encoders or mappings
+transaction_map = {'POS': 0, 'Transfer': 1, 'ATM': 2, 'USSD': 3, 'Internet': 4}
+bank_map = {'Access': 0, 'Opay': 1, 'Kuda': 2, 'MoneyPoint': 3, 'Zenith': 4, 'GTB': 5, 'UBA': 6, 'First Bank': 7}
+time_map = {'Morning': 0, 'Afternoon': 1, 'Evening': 2, 'Night': 3}
+location_map = {'Lagos': 0, 'Yola': 1, 'Abuja': 2, 'Port Harcourt': 3, 'Kano': 4}  # Optional: Add more
 
 @app.route('/')
-def home():
-    return render_template('home.html')
+def form():
+    return render_template('form.html')
 
 @app.route('/predict', methods=['POST'])
 def predict():
-    try:
-        inputs = [
-            float(request.form['amount']),
-            int(request.form['transaction_hour']),
-            int(request.form['device_type']),
-            int(request.form['channel']),
-            int(request.form['merchant_type']),
-            int(request.form['customer_age']),
-            int(request.form['location_code']),
-        ]
-        prediction = model.predict([inputs])[0]
-        return render_template('result.html', prediction=prediction)
-    except Exception as e:
-        return f"Error: {e}"
-@app.route('/dashboard')
-def dashboard():
-    # Sample fraud data
-    fraud_logs = [
-        {"date": "2025-08-01", "location": "Lagos", "amount": 30500, "status": "Fraud"},
-        {"date": "2025-08-02", "location": "Abuja", "amount": 15000, "status": "Normal"},
-        {"date": "2025-08-03", "location": "Kano", "amount": 72000, "status": "Fraud"},
-        {"date": "2025-08-03", "location": "Port Harcourt", "amount": 8200, "status": "Normal"},
-    ]
+    amount = float(request.form['amount'])
+    transaction_type = transaction_map.get(request.form['transaction_type'], 0)
+    bank_name = bank_map.get(request.form['bank_name'], 0)
+    time_of_day = time_map.get(request.form['time_of_day'], 0)
+    location = location_map.get(request.form['location'], 0)  # default to 0 if unknown
 
-    # Chart data
-    chart_labels = ["Lagos", "Abuja", "Kano", "Port Harcourt"]
-    chart_data = [5, 1, 3, 2]  # Number of frauds per location (mocked)
+    # Feature vector
+    features = np.array([[amount, transaction_type, bank_name, time_of_day, location]])
+    
+    prediction = model.predict(features)[0]
+    proba = model.predict_proba(features)[0][1]
 
-    return render_template('dashboard.html', fraud_logs=fraud_logs, chart_labels=chart_labels, chart_data=chart_data)
+    result = "FRAUDULENT TRANSACTION 🚨" if prediction == 1 else "GENUINE TRANSACTION ✅"
+    return render_template('result.html', result=result, probability=round(proba * 100, 2))
 
 if __name__ == '__main__':
     app.run(debug=True)
-
