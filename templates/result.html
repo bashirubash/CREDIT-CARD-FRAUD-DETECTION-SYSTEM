@@ -3,15 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <title>Fraud Detection Result | Nigeria</title>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap"
-      rel="stylesheet"
-    />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="{{ url_for('static', filename='styles.css') }}"
-    />
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
       body {
@@ -92,6 +85,9 @@
         {% elif prediction == 1 %}
           <p class="status fraud">⚠️ WARNING! This transaction is likely FRAUDULENT.</p>
         {% endif %}
+        <p><strong>Confidence Score:</strong> {{ probability }}%</p>
+        <p><strong>Amount:</strong> ₦{{ amount }}</p>
+        <p><strong>Location:</strong> {{ location }}</p>
       </div>
 
       <div class="card">
