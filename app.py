@@ -4,7 +4,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
-# Load the model pipeline (should include preprocessing)
+# Load model (must include preprocessing like encoders in pipeline)
 model = joblib.load('model.pkl')
 
 # Dropdown options
@@ -18,8 +18,8 @@ def index():
     prediction = None
     if request.method == 'POST':
         try:
-            # Collect inputs
-            data = pd.DataFrame([{
+            # Get form inputs
+            input_data = pd.DataFrame([{
                 'Transaction_Amount': float(request.form['amount']),
                 'Bank_Name': request.form['bank'],
                 'Card_Type': request.form['card'],
@@ -27,13 +27,13 @@ def index():
                 'Location': request.form['location']
             }])
 
-            # Predict
-            result = model.predict(data)[0]
+            # Model prediction (pipeline handles preprocessing)
+            result = model.predict(input_data)[0]
             prediction = "🔴 Fraudulent Transaction" if result == 1 else "🟢 Legitimate Transaction"
         except Exception as e:
-            prediction = f"Error: {str(e)}"
+            prediction = f"❌ Error: {str(e)}"
 
-    # Render form
+    # Render HTML
     return render_template_string('''
     <!DOCTYPE html>
     <html>
@@ -57,6 +57,7 @@ def index():
                 font-size: 1.2em;
                 font-weight: bold;
                 padding-top: 20px;
+                color: #d32f2f;
             }
         </style>
     </head>
@@ -108,7 +109,13 @@ def index():
         </div>
     </body>
     </html>
-    ''', banks=bank_options, cards=card_types, types=transaction_types, locations=locations, prediction=prediction)
+    ''',
+    banks=bank_options,
+    cards=card_types,
+    types=transaction_types,
+    locations=locations,
+    prediction=prediction
+    )
 
 if __name__ == '__main__':
     app.run(debug=True)
