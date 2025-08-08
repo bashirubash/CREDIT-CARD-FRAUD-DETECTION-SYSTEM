@@ -1,69 +1,174 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <title>Fraud Check Results - Nigeria</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles.css') }}" />
-  <style>
-    body {
-      font-family: 'Quicksand', sans-serif;
-      background-color: #f8f9fa;
-      color: #333;
-      padding: 20px;
-    }
-    .results {
-      margin-top: 40px;
-      text-align: center;
-    }
-    .safe {
-      color: green;
-      font-size: 22px;
-      border: 2px solid green;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: #e9f7ef;
-    }
-    .fraud {
-      color: red;
-      font-size: 22px;
-      border: 2px solid red;
-      padding: 20px;
-      border-radius: 10px;
-      background-color: #fcebea;
-    }
-    .dashboard-link {
-      margin-top: 30px;
-      text-align: center;
-    }
-    .dashboard-link a {
-      text-decoration: none;
-      background-color: #007bff;
-      color: #fff;
-      padding: 10px 25px;
-      border-radius: 5px;
-      font-size: 16px;
-    }
-  </style>
-</head>
-<body>
-  <h1 style="text-align: center; color: #4a148c;">Fraud Detection Result - Nigerian System</h1>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Fraud Detection Result | Nigeria</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Quicksand:wght@500&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="{{ url_for('static', filename='styles.css') }}"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+      body {
+        font-family: 'Quicksand', sans-serif;
+        background-color: #f2f7fa;
+        margin: 0;
+        padding: 0;
+      }
+      header {
+        background-color: #046380;
+        color: white;
+        padding: 20px 0;
+        text-align: center;
+      }
+      .container {
+        width: 90%;
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+      .card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        padding: 20px;
+        margin-bottom: 30px;
+      }
+      .status {
+        font-size: 22px;
+        font-weight: bold;
+      }
+      .safe {
+        color: green;
+      }
+      .fraud {
+        color: red;
+      }
+      .btn-info {
+        background-color: #046380;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 6px;
+        font-size: 16px;
+        cursor: pointer;
+        text-decoration: none;
+      }
+      canvas {
+        width: 100% !important;
+        height: 300px !important;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+      table th, table td {
+        border: 1px solid #ccc;
+        padding: 10px;
+        text-align: center;
+      }
+      table th {
+        background-color: #046380;
+        color: white;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Nigerian Credit Card Fraud Detection System</h1>
+    </header>
 
-  <div class="results">
-    {% if prediction == 0 %}
-      <div class="safe">
-        ✅ Good news! Your transaction looks safe and normal. No fraud detected.
-      </div>
-    {% elif prediction == 1 %}
-      <div class="fraud">
-        ⚠️ Alert! This transaction shows signs of fraud. Please contact your bank immediately.
-      </div>
-    {% endif %}
-  </div>
+    <div class="container">
 
-  <div class="dashboard-link">
-    <a href="/dashboard">Go to Dashboard</a> |
-    <a href="/">Test Another Transaction</a>
-  </div>
-</body>
+      <div class="card">
+        {% if prediction == 0 %}
+          <p class="status safe">✅ Transaction is SAFE. No fraudulent activity detected.</p>
+        {% elif prediction == 1 %}
+          <p class="status fraud">⚠️ WARNING! This transaction is likely FRAUDULENT.</p>
+        {% endif %}
+      </div>
+
+      <div class="card">
+        <h2>📊 Fraud Trends in Nigeria (Sample Data)</h2>
+        <canvas id="fraudChart"></canvas>
+      </div>
+
+      <div class="card">
+        <h2>🧾 Recent Transactions Log</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>Amount (₦)</th>
+              <th>Status</th>
+              <th>Location</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TXN1001</td>
+              <td>15,000</td>
+              <td><span style="color: green;">Safe</span></td>
+              <td>Lagos</td>
+              <td>2025-08-08</td>
+            </tr>
+            <tr>
+              <td>TXN1002</td>
+              <td>78,000</td>
+              <td><span style="color: red;">Fraud</span></td>
+              <td>Port Harcourt</td>
+              <td>2025-08-08</td>
+            </tr>
+            <tr>
+              <td>TXN1003</td>
+              <td>5,500</td>
+              <td><span style="color: green;">Safe</span></td>
+              <td>Abuja</td>
+              <td>2025-08-07</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="text-align: center;">
+        <a href="/">
+          <button class="btn-info">🔁 Run Another Test</button>
+        </a>
+      </div>
+    </div>
+
+    <script>
+      const ctx = document.getElementById('fraudChart').getContext('2d');
+      const fraudChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          datasets: [{
+            label: 'Fraud Cases Detected',
+            data: [3, 6, 2, 8, 4, 5, 9],
+            borderColor: 'red',
+            backgroundColor: 'rgba(255, 0, 0, 0.1)',
+            tension: 0.4
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true,
+              ticks: {
+                stepSize: 1
+              }
+            }
+          }
+        }
+      });
+    </script>
+  </body>
 </html>
